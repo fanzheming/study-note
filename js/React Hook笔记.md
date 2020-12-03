@@ -216,9 +216,94 @@
 	}
 	```
 
-	
+## 额外hook
 
+### `useReducer`
+
+1. 作用：
+	类似 `redux` 中的功能，相较于 `useState`，它更适合一些逻辑较复杂且包含多个子值，或者下一个 `state` 依赖于之前的 `state` 等等的特定场景
+
+2. 用法：
+
+	```js
 	
+	const initialState = {
+	   count: 0
+	}
+	
+	const reducer = (state, action) => {
+	  switch (action.type) {
+	    case 'increment':
+	      return {count: state.count + 1}
+	    case 'decrement':
+	      return {count: state.count - 1}
+	    default:
+	      throw new Error()
+	  }
+	}
+	
+	function App() {
+	  const [state, dispatch] = useReducer(reducer, initialState)
+	  return (
+	    <>
+	      点击次数: {state.count}
+	      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+	      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+	    </>
+	  )
+	}
+	```
+
+	> `useReducer`可以配合`useContext`实现简易版redux（但不可替代redux，redux不仅仅可用在react中，还提供了中间件功能），实现原理为 context传递dispatch给下层所有子组件，子组件可调用dispatch改变状态。可以看下面的例子👇
+	>
+	> ```js
+	>     const Ctx = React.createContext(null);
+	> 
+	>     const initialState = {
+	>       count: 0
+	>     }
+	> 
+	>     const reducer = (state, action) => {
+	>       switch (action.type) {
+	>         case 'increment':
+	>           return { count: state.count + 1 }
+	>         case 'decrement':
+	>           return { count: state.count - 1 }
+	>         default:
+	>           throw new Error()
+	>       }
+	>     }
+	> 
+	>     const App = () => {
+	>       const [state, dispatch] = React.useReducer(reducer, initialState)
+	> 
+	>       return (
+	>         <Ctx.Provider value={{state,dispatch}}>
+	>           Father count: {state.count}
+	>           <button onClick={()=>dispatch({type:'increment'})}>+</button>
+	>           <button onClick={()=>dispatch({type:'decrement'})}>-</button>
+	>           <Son />
+	>         </Ctx.Provider>
+	>       )
+	>     }
+	> 
+	>     const Son = () => {
+	>       const {state,dispatch} = React.useContext(Ctx)
+	>       return (
+	>         <div>
+	>           Son count: {state.count}
+	>           <button onClick={()=>dispatch({type:'increment'})}>+</button>
+	>           <button onClick={()=>dispatch({type:'decrement'})}>-</button>
+	>         </div>
+	>       )
+	>     }
+	> ```
+	>
+	> [官网说明](https://react.docschina.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down)
+
+
+
+
 
 
 
