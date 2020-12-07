@@ -301,7 +301,114 @@
 	>
 	> [官网说明](https://react.docschina.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down)
 
+### `useMemo`
 
+1. 作用：
+	把`回调函数`和`依赖项数组`作为参数传入 `useMemo`，它仅会在某个依赖项改变时才重新计算 ==memoized 值==（缓存了这个值）
+
+2. 目的： 性能优化，避免在每次渲染时都进行高开销的计算
+
+3. 用法：
+
+	```js
+	const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b])
+	```
+
+	> 需要注意的是，==`useMemo` 会在渲染的时候执行==，而不是渲染之后执行，这一点和 `useEffect` 有区别，所以 `useMemo` 不建议有副作用相关的逻辑
+
+### `useCallback`
+
+1. 作用：
+	把`回调函数`及`依赖项数组`作为参数传入 `useCallback`，它将==返回该回调函数的 memoized 版本==（缓存了这个函数），该回调函数仅在某个依赖项改变时才会更新
+
+2. 目的：性能优化
+
+3. 用法：
+
+	```js
+	const memoizedCallback = useCallback(
+	  () => {
+	    doSomething(a, b);
+	  },
+	  [a, b],
+	)
+	```
+
+	>==`useMemo`返回一个被缓存的值，而`useCallback`返回一个被缓存的函数==
+	>
+	>`useCallback`是`useMemo`的语法糖，useCallback(fn, deps)  相当于 useMemo(() => fn, deps)
+
+### `useRef`
+
+1. 作用：
+	`useRef` 返回一个可变的 ref 对象，其 `.current` 属性被初始化为传入的参数（`initialValue`）。返回的 ref 对象在组件的整个生命周期内保持不变
+
+2. 用法：
+
+	```js
+	const refContainer = useRef(initialValue)
+	```
+
+3. 用例
+	（1）访问子组件
+
+	```js
+	function TextInputWithFocusButton() {
+	  const inputEl = useRef(null); // 访问子组件时初始值设为null
+	  const onButtonClick = () => {
+	    // `current` 指向已挂载到 DOM 上的input元素
+	    inputEl.current.focus();
+	  };
+	  return (
+	    <>
+	      <input ref={inputEl} type="text" />
+	      <button onClick={onButtonClick}>Focus the input</button>
+	    </>
+	  );
+	}
+	```
+
+	（2）缓存值
+
+	`useRef` 会在每次渲染时返回同一个 ref 对象，在其current属性上赋值可以达到缓存效果
+
+	```js
+	function App () {
+	  const [ count, setCount ] = useState(0)
+	  const timer = useRef(null)
+	  let timer2 
+	  
+	  useEffect(() => {
+	    let id = setInterval(() => {
+	      setCount(count => count + 1)
+	    }, 500)
+	
+	    timer.current = id
+	    timer2 = id
+	    return () => {
+	      clearInterval(timer.current)
+	    }
+	  }, [])
+	    
+	  const onClickRef = useCallback(() => {
+	    clearInterval(timer.current)
+	  }, [])
+	
+	  const onClick = useCallback(() => {
+	    clearInterval(timer2)
+	  }, [])
+	
+	  return (
+	    <div>
+	      点击次数: { count }
+	      <button onClick={onClick}>普通</button>
+	      <button onClick={onClickRef}>useRef</button>
+	    </div>
+	    )
+	}
+	```
+
+	
 
 
 
