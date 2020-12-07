@@ -408,6 +408,39 @@
 	}
 	```
 
+### `useImperativeHandle`
+
+1. 作用：
+	子组件可以选择性的暴露给父组件一些方法，`useImperativeHandle`应当与 `forwardRef` 一起使用
+
+2. 用法：
+
+	```js
+	const FancyInput = (props, ref) => {
+	  const inputRef = useRef();
+	  useImperativeHandle(ref, () => ({
+	    focus: () => {
+	      inputRef.current.focus();
+	    }
+	  }));
+	  return <input ref={inputRef} ... />;
+	}
+	FancyInput = forwardRef(FancyInput);
+	
+	
+	const App = () => {
+	    const fancyRef = useRef(null)
+	    
+	    const onClickHandle = () => {
+	        fancyRef.current.focus()
+	    }
+	    return (
+			<FancyInput ref={inputRef} /> 
+			<button onClick={onClickHandle}>点我</button>
+		)
+	}
+	```
+
 	
 
 
