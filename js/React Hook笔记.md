@@ -441,7 +441,54 @@
 	}
 	```
 
+### `useLayoutEffect`
+
+1. 作用：
+	在处理DOM的时候,当你的useEffect里面的操作需要处理DOM,并且会改变页面的样式,就需要用这个,否则可能会出现出现闪屏问题
+
+2. useEffect和useLayoutEffect的区别：
+	`useEffect`: 
+	      基本上90%的情况下,都应该用这个。这个是在render结束后，callback函数执行，但是==不会阻塞浏览器的绘制==，算是某种异步的方式吧。但是class组件的componentDidMount 和componentDidUpdate是同步的,在render结束后就运行。useEffect在大部分场景下都比class的方式性能更好
+
+	`useLayoutEffect`:
+
+	​     当你的useEffect里面的操作需要处理DOM，改变页面的样式，就需要用这个，否则可能会出现出现闪屏问题,。callback函数会在DOM更新完成后立即执行,但是==会在浏览器进行任何绘制之前运行完成,阻塞了浏览器的绘制==
+
+	[参考简书](https://www.jianshu.com/p/412c874c5add)
+
+## 自定义hook
+
+1. 作用：
+
+	可以将组件逻辑提取到可重用的函数中
+
+	自定义 Hook 是一个函数，其名称以 “`use`” 开头，函数内部可以调用其他的 Hook
+
+	我们可以自由的决定它的参数是什么，以及它应该返回什么
+
+2. 例子：
+	实现一个useReducer
+
+	```js
+	function useReducer(reducer, initialState) {
+	  const [state, setState] = useState(initialState);
 	
+	  function dispatch(action) {
+	    const nextState = reducer(state, action);
+	    setState(nextState);
+	  }
+	
+	  return [state, dispatch];
+	}
+	```
+
+	
+
+
+
+
+
+
 
 
 
